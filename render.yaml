@@ -1,0 +1,30 @@
+services:
+  - type: web
+    runtime: node
+    name: apiradar
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: BETTER_AUTH_SECRET
+        sync: false
+      - key: BETTER_AUTH_URL
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: EMAIL_FROM
+        value: onboarding@resend.dev
+      - key: CRON_SECRET
+        sync: false
+      - key: NEXT_PUBLIC_APP_URL
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        value: placeholder
+      - key: GOOGLE_CLIENT_SECRET
+        value: placeholder
+      - key: NODE_VERSION
+        value: "22"
