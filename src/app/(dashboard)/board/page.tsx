@@ -2,6 +2,7 @@ import { db } from "@/lib/db";
 import { cards, changeEvents, providers } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { KanbanBoard } from "@/components/board/kanban-board";
+import { getServerSession } from "@/lib/auth/session";
 
 const COLUMNS = [
   { id: "new", label: "New" },
@@ -12,7 +13,7 @@ const COLUMNS = [
   { id: "ignored", label: "Ignored" },
 ] as const;
 
-async function getCards() {
+async function getCards(userId: string) {
   try {
     const allCards = await db
       .select({
@@ -23,16 +24,17 @@ async function getCards() {
       .from(cards)
       .innerJoin(changeEvents, eq(cards.changeEventId, changeEvents.id))
       .innerJoin(providers, eq(changeEvents.providerId, providers.id))
+      .where(eq(cards.userId, userId))
       .orderBy(cards.position);
     return allCards;
   } catch {
-    // DB not connected yet — return empty
     return [];
   }
 }
 
 export default async function BoardPage() {
-  const allCards = await getCards();
+  const session = await getServerSession();
+  const allCards = await getCards(session!.user.id);
 
   const grouped = COLUMNS.map((col) => ({
     ...col,

@@ -1,7 +1,11 @@
 import { db } from "@/lib/db";
-import { providers } from "@/lib/db/schema";
+import { providers, subscriptions } from "@/lib/db/schema";
+import { eq } from "drizzle-orm";
 import Link from "next/link";
 import { Layers, ExternalLink } from "lucide-react";
+import { ProviderLogo } from "@/components/providers/provider-logo";
+import { SubscribeButton } from "@/components/providers/subscribe-button";
+import { getServerSession } from "@/lib/auth/session";
 
 async function getProviders() {
   try {
@@ -11,8 +15,22 @@ async function getProviders() {
   }
 }
 
+async function getUserSubscriptions(userId: string) {
+  try {
+    const subs = await db
+      .select({ providerId: subscriptions.providerId })
+      .from(subscriptions)
+      .where(eq(subscriptions.userId, userId));
+    return new Set(subs.map((s) => s.providerId));
+  } catch {
+    return new Set<string>();
+  }
+}
+
 export default async function ProvidersPage() {
+  const session = await getServerSession();
   const allProviders = await getProviders();
+  const subscribedIds = await getUserSubscriptions(session!.user.id);
 
   return (
     <div>
@@ -41,11 +59,10 @@ export default async function ProvidersPage() {
             >
               <div className="flex items-start gap-3">
                 {p.logoUrl && (
-                  <img
+                  <ProviderLogo
                     src={p.logoUrl}
                     alt={p.name}
                     className="h-10 w-10 rounded-lg border border-gray-100"
-                    onError={(e: any) => (e.target.style.display = "none")}
                   />
                 )}
                 <div className="flex-1 min-w-0">
@@ -64,9 +81,10 @@ export default async function ProvidersPage() {
                 <span className="text-[10px] text-gray-400">
                   Every {p.fetchIntervalHours}h
                 </span>
-                {p.website && (
-                  <ExternalLink className="h-3 w-3 text-gray-400" />
-                )}
+                <SubscribeButton
+                  providerId={p.id}
+                  isSubscribed={subscribedIds.has(p.id)}
+                />
               </div>
             </Link>
           ))}

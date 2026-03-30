@@ -1,10 +1,17 @@
 import { Sidebar } from "@/components/layout/sidebar";
+import { getServerSession } from "@/lib/auth/session";
+import { redirect } from "next/navigation";
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const session = await getServerSession();
+  if (!session) {
+    redirect("/login");
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Sidebar />

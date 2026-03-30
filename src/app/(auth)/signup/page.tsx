@@ -23,7 +23,7 @@ export default function SignupPage() {
       if (result.error) {
         setError(result.error.message || "Could not create account");
       } else {
-        router.push("/board");
+        router.push("/onboarding");
       }
     } catch {
       setError("Something went wrong. Please try again.");

@@ -1,10 +1,12 @@
 import { db } from "@/lib/db";
-import { providers, changeEvents } from "@/lib/db/schema";
-import { eq, desc } from "drizzle-orm";
+import { providers, changeEvents, subscriptions } from "@/lib/db/schema";
+import { eq, desc, and } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ExternalLink, Clock } from "lucide-react";
 import Link from "next/link";
 import { cn, SEVERITY_COLORS, CHANGE_TYPE_LABELS, timeAgo } from "@/lib/utils";
+import { SubscribeButton } from "@/components/providers/subscribe-button";
+import { getServerSession } from "@/lib/auth/session";
 
 async function getProvider(slug: string) {
   try {
@@ -41,7 +43,20 @@ export default async function ProviderDetailPage({
   const provider = await getProvider(slug);
   if (!provider) return notFound();
 
+  const session = await getServerSession();
   const changes = await getChanges(provider.id);
+
+  const userSub = await db
+    .select()
+    .from(subscriptions)
+    .where(
+      and(
+        eq(subscriptions.userId, session!.user.id),
+        eq(subscriptions.providerId, provider.id)
+      )
+    )
+    .limit(1);
+  const isSubscribed = userSub.length > 0;
 
   return (
     <div>
@@ -63,7 +78,13 @@ export default async function ProviderDetailPage({
           />
         )}
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">{provider.name}</h1>
+          <div className="flex items-center gap-3">
+            <h1 className="text-2xl font-bold text-gray-900">{provider.name}</h1>
+            <SubscribeButton
+              providerId={provider.id}
+              isSubscribed={isSubscribed}
+            />
+          </div>
           <p className="text-sm text-gray-500 mt-1">{provider.description}</p>
           <div className="flex items-center gap-4 mt-2">
             {provider.website && (

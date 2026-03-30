@@ -1,7 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { cards, changeEvents, providers, user, notificationPreferences } from "@/lib/db/schema";
+import {
+  cards,
+  changeEvents,
+  providers,
+  user,
+  notificationPreferences,
+} from "@/lib/db/schema";
 import { eq, and, gte, inArray } from "drizzle-orm";
+import { sendDigestEmail } from "@/lib/email/send";
 
 export async function GET(request: NextRequest) {
   const authHeader = request.headers.get("authorization");
@@ -12,17 +19,25 @@ export async function GET(request: NextRequest) {
   }
 
   try {
+    const currentHourUtc = new Date().getUTCHours();
     const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
 
-    // Get users with digest enabled
+    // Get users with digest enabled whose preferred hour matches now
     const prefs = await db
       .select()
       .from(notificationPreferences)
-      .where(eq(notificationPreferences.emailDigestEnabled, true));
+      .where(
+        and(
+          eq(notificationPreferences.emailDigestEnabled, true),
+          eq(notificationPreferences.digestHourUtc, currentHourUtc)
+        )
+      );
 
     const userIds = prefs.map((p) => p.userId);
     if (userIds.length === 0) {
-      return NextResponse.json({ message: "No users with digest enabled" });
+      return NextResponse.json({
+        message: "No users with digest enabled for this hour",
+      });
     }
 
     // Get recent critical/high cards for these users
@@ -47,22 +62,48 @@ export async function GET(request: NextRequest) {
         )
       );
 
-    // Group by user and send emails
-    const byUser = new Map<string, typeof recentCards>();
+    // Group by user email
+    const byUser = new Map<
+      string,
+      { name: string; cards: typeof recentCards }
+    >();
     for (const row of recentCards) {
-      const existing = byUser.get(row.userEmail) || [];
-      existing.push(row);
+      const existing = byUser.get(row.userEmail) || {
+        name: row.userName,
+        cards: [],
+      };
+      existing.cards.push(row);
       byUser.set(row.userEmail, existing);
     }
 
     let sent = 0;
-    for (const [email, userCards] of byUser) {
-      // TODO: Send via Resend when API key is configured
-      console.log(`Would send digest to ${email}: ${userCards.length} changes`);
-      sent++;
+    const errors: string[] = [];
+
+    for (const [email, { name, cards: userCards }] of byUser) {
+      try {
+        await sendDigestEmail(
+          email,
+          name,
+          userCards.map((c) => ({
+            providerName: c.provider.name,
+            title: c.event.title,
+            summary: c.event.summary,
+            severity: c.event.severity,
+            changeType: c.event.changeType,
+          }))
+        );
+        sent++;
+      } catch (err) {
+        console.error(`Failed to send digest to ${email}:`, err);
+        errors.push(email);
+      }
     }
 
-    return NextResponse.json({ success: true, digestsSent: sent });
+    return NextResponse.json({
+      success: true,
+      digestsSent: sent,
+      ...(errors.length > 0 && { errors }),
+    });
   } catch (error) {
     console.error("Digest cron error:", error);
     return NextResponse.json({ error: "Digest failed" }, { status: 500 });
