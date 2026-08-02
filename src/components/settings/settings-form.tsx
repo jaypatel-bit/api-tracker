@@ -47,9 +47,9 @@ export function SettingsForm({ initialPrefs }: SettingsFormProps) {
         <div className="space-y-4">
           <label className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-[var(--foreground)]">Daily email digest</p>
+              <p className="text-sm font-medium text-[var(--foreground)]">Monthly email digest</p>
               <p className="text-xs text-[var(--muted)]">
-                Summary of new changes delivered to your inbox
+                Summary of the last 30 days of API changes, delivered on the first day of each month
               </p>
             </div>
             <input
@@ -65,7 +65,7 @@ export function SettingsForm({ initialPrefs }: SettingsFormProps) {
           {prefs.emailDigestEnabled && (
             <div className="pl-0">
               <label className="mb-2 block text-xs font-medium text-[var(--muted)]">
-                Digest delivery time
+                Monthly digest delivery time
               </label>
               <select
                 value={prefs.digestHourUtc}
@@ -85,9 +85,9 @@ export function SettingsForm({ initialPrefs }: SettingsFormProps) {
 
           <label className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-[var(--foreground)]">Critical change alerts</p>
+              <p className="text-sm font-medium text-[var(--foreground)]">Major change alerts</p>
               <p className="text-xs text-[var(--muted)]">
-                Instant email for critical severity changes
+                Instant email for critical and high-severity API changes
               </p>
             </div>
             <input
