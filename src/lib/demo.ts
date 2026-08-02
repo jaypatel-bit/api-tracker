@@ -52,16 +52,16 @@ export const demoSession = {
 export const demoProviders: Provider[] = [
   {
     id: "11111111-1111-1111-1111-111111111111",
-    name: "Google Analytics",
+    name: "GA4 Data API",
     slug: "google-analytics",
     logoUrl: "https://logo.clearbit.com/analytics.google.com",
     website: "https://analytics.google.com",
     description:
-      "GA4 and Analytics Admin APIs. Monitor reporting schema changes, attribution updates, and export behavior shifts.",
+      "Official Google Analytics 4 Data API changelog monitoring for reporting schema changes, attribution updates, and export behavior shifts.",
     changelogUrl:
       "https://developers.google.com/analytics/devguides/reporting/data/v1/changelog",
     fetchCssSelector: "main, article, .devsite-article-body",
-    fetchIntervalHours: 4,
+    fetchIntervalHours: 24 * 30,
     lastFetchedAt: new Date("2026-08-02T09:10:00.000Z"),
     isActive: true,
     createdAt: new Date("2026-08-02T00:00:00.000Z"),
@@ -74,10 +74,10 @@ export const demoProviders: Provider[] = [
     logoUrl: "https://logo.clearbit.com/ads.google.com",
     website: "https://developers.google.com/google-ads",
     description:
-      "Version sunsets, policy-sensitive changes, and migration notices for paid media workflows.",
+      "Official Google Ads API release-note monitoring for version sunsets, migration notices, and paid media workflow changes.",
     changelogUrl: "https://developers.google.com/google-ads/api/docs/release-notes",
     fetchCssSelector: "main, article, .devsite-article-body",
-    fetchIntervalHours: 4,
+    fetchIntervalHours: 24 * 30,
     lastFetchedAt: new Date("2026-08-02T08:40:00.000Z"),
     isActive: true,
     createdAt: new Date("2026-08-02T00:00:00.000Z"),
@@ -90,10 +90,10 @@ export const demoProviders: Provider[] = [
     logoUrl: "https://logo.clearbit.com/meta.com",
     website: "https://developers.facebook.com/docs/marketing-apis",
     description:
-      "Track permissions, webhook, and version changes affecting Meta ad operations.",
+      "Official Meta Graph and Marketing API changelog monitoring for permission, version, and breaking changes affecting Meta ad operations.",
     changelogUrl: "https://developers.facebook.com/docs/graph-api/changelog/",
     fetchCssSelector: "main, article, ._4cel",
-    fetchIntervalHours: 4,
+    fetchIntervalHours: 24 * 30,
     lastFetchedAt: new Date("2026-08-02T07:55:00.000Z"),
     isActive: true,
     createdAt: new Date("2026-08-02T00:00:00.000Z"),
