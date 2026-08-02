@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { processAllProviders } from "@/lib/pipeline/process";
 import { getCronSecret } from "@/lib/cron";
+import { cleanupRetentionData } from "@/lib/db/retention";
 
 export const maxDuration = 60; // Vercel function timeout
 
@@ -15,9 +16,11 @@ export async function GET(request: NextRequest) {
 
   try {
     const results = await processAllProviders();
+    const retention = await cleanupRetentionData();
     return NextResponse.json({
       success: true,
       results,
+      retention,
       processedAt: new Date().toISOString(),
     });
   } catch (error) {
