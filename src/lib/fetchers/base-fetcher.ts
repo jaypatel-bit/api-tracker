@@ -63,6 +63,11 @@ export async function fetchAndSnapshot(provider: Provider): Promise<FetchResult>
     .limit(1);
 
   if (lastSnapshot.length > 0 && lastSnapshot[0].contentHash === contentHash) {
+    await db
+      .update(providers)
+      .set({ lastFetchedAt: new Date(), updatedAt: new Date() })
+      .where(eq(providers.id, provider.id));
+
     // No change
     return { content, contentHash, isNew: false, snapshotId: null };
   }
