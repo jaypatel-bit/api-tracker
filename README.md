@@ -4,7 +4,7 @@ APIRadar is a Next.js SaaS app for tracking API changes across marketing and ana
 
 ## Live App
 
-- Public URL: https://apiradar-e858.onrender.com
+- Public URL: https://api-tracker-nine.vercel.app
 - Public demo: visit `/signup` or `/login` and continue into the sample workspace without setting up a database
 
 ## Product Focus
