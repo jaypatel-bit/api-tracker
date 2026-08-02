@@ -1,6 +1,6 @@
 # APIRadar
 
-APIRadar is a Next.js SaaS app for tracking API changes across marketing and analytics platforms such as Google Analytics, Google Ads, and Meta. It helps teams detect changelog updates, classify severity, and move high-risk changes through a shared review workflow.
+APIRadar is a Next.js SaaS app for tracking API changes across marketing and analytics platforms such as GA4, Google Ads, and Meta. It helps teams detect changelog updates, classify severity, and move high-risk changes through a shared review workflow.
 
 ## Live App
 
@@ -53,9 +53,10 @@ npm run dev
 
 ## Seeded Providers
 
-The default seed script includes:
+The default seed script includes official vendor sources for:
 
-- Google Analytics
+- GA4 Data API
+- GA4 Measurement Protocol
 - Google Ads
 - Meta Marketing API
 - Looker Studio
