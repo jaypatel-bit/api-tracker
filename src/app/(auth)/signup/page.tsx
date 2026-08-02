@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Radar } from "lucide-react";
 import { signUp } from "@/lib/auth/client";
+import { getAuthErrorMessage } from "@/lib/auth/error-message";
 import { isPublicDemoMode } from "@/lib/demo";
 
 export default function SignupPage() {
@@ -29,12 +30,12 @@ export default function SignupPage() {
     try {
       const result = await signUp.email({ name, email, password });
       if (result.error) {
-        setError(result.error.message || "Could not create account");
+        setError(getAuthErrorMessage(result.error, "signup"));
       } else {
         router.push("/onboarding");
       }
-    } catch {
-      setError("Something went wrong. Please try again.");
+    } catch (error) {
+      setError(getAuthErrorMessage(error, "signup"));
     } finally {
       setLoading(false);
     }
