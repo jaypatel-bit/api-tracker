@@ -14,25 +14,38 @@ import { classifyChange } from "@/lib/ai/classify";
 import type { Provider } from "@/lib/db/schema";
 import { sendCriticalAlertEmail } from "@/lib/email/send";
 
+function isProviderDue(provider: Provider, now = new Date()) {
+  if (!provider.lastFetchedAt) {
+    return true;
+  }
+
+  const fetchIntervalMs = provider.fetchIntervalHours * 60 * 60 * 1000;
+  return now.getTime() - provider.lastFetchedAt.getTime() >= fetchIntervalMs;
+}
+
 export async function processProvider(provider: Provider): Promise<{
-  status: "no_change" | "new_change" | "error";
+  status: "skipped" | "no_change" | "new_change" | "error";
   message: string;
 }> {
   try {
+    // Stage 1+2: Fetch and snapshot
     const fetchResult = await fetchAndSnapshot(provider);
 
     if (!fetchResult.isNew) {
       return { status: "no_change", message: `${provider.name}: No changes detected` };
     }
 
+    // Stage 3: Compute diff
     const diff = await computeDiff(provider.id, fetchResult.content);
 
     if (!diff.hasChanges) {
       return { status: "no_change", message: `${provider.name}: Diff too small to classify` };
     }
 
+    // Stage 4: AI classification
     const classification = await classifyChange(diff.addedText || diff.rawDiff, provider.name);
 
+    // Stage 5: Create change event
     const [event] = await db
       .insert(changeEvents)
       .values({
@@ -50,6 +63,7 @@ export async function processProvider(provider: Provider): Promise<{
       })
       .returning({ id: changeEvents.id });
 
+    // Create cards for all subscribed users
     const subs = await db
       .select()
       .from(subscriptions)
@@ -123,8 +137,24 @@ export async function processAllProviders() {
     .from(providers)
     .where(eq(providers.isActive, true));
 
+  const now = new Date();
   const results = [];
   for (const provider of allProviders) {
+    if (!isProviderDue(provider, now)) {
+      const nextFetchAt = provider.lastFetchedAt
+        ? new Date(
+            provider.lastFetchedAt.getTime() + provider.fetchIntervalHours * 60 * 60 * 1000,
+          )
+        : now;
+      const result = {
+        status: "skipped" as const,
+        message: `${provider.name}: Not due until ${nextFetchAt.toISOString()}`,
+      };
+      results.push(result);
+      console.log(result.message);
+      continue;
+    }
+
     const result = await processProvider(provider);
     results.push(result);
     console.log(result.message);
