@@ -37,7 +37,7 @@ export default async function SettingsPage() {
           Settings
         </h1>
         <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--muted)]">
-          Configure how APIRadar briefs your team on critical changes, daily digests, and review timing.
+          Configure how APIRadar briefs your team on major changes, monthly digests, and review timing.
         </p>
       </section>
 
