@@ -1,7 +1,22 @@
 import type { Card, ChangeEvent, Provider } from "@/lib/db/schema";
 
+function isMissingOrPlaceholder(value: string | undefined, placeholders: string[]) {
+  if (!value) return true;
+
+  const normalized = value.trim().toLowerCase();
+  return placeholders.some((placeholder) => normalized === placeholder.toLowerCase());
+}
+
 export function isDemoMode() {
-  return !process.env.DATABASE_URL || !process.env.BETTER_AUTH_SECRET;
+  return (
+    isMissingOrPlaceholder(process.env.DATABASE_URL, [
+      "your_neon_or_postgres_connection_string",
+    ]) ||
+    isMissingOrPlaceholder(process.env.BETTER_AUTH_SECRET, [
+      "some-long-random-secret",
+      "replace-this-with-a-real-secret",
+    ])
+  );
 }
 
 export const demoSession = {
