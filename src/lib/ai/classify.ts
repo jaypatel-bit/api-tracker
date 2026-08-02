@@ -1,18 +1,22 @@
 import Anthropic from "@anthropic-ai/sdk";
+import type { changeEvents } from "@/lib/db/schema";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
+type ChangeType = typeof changeEvents.$inferInsert.changeType;
+type Severity = typeof changeEvents.$inferInsert.severity;
+
 export interface Classification {
   title: string;
-  changeType: string;
-  severity: string;
+  changeType: ChangeType;
+  severity: Severity;
   confidence: number;
   affectedAreas: string[];
   suggestedActions: string[];
   summary: string;
 }
 
-const VALID_CHANGE_TYPES = [
+const VALID_CHANGE_TYPES: ChangeType[] = [
   "breaking_change", "deprecation", "new_endpoint", "removed_endpoint",
   "new_parameter", "removed_parameter", "enum_change", "auth_change",
   "rate_limit_change", "webhook_change", "sdk_release", "migration_notice",
@@ -20,7 +24,7 @@ const VALID_CHANGE_TYPES = [
   "behavior_change", "other",
 ];
 
-const VALID_SEVERITIES = ["critical", "high", "medium", "low", "informational"];
+const VALID_SEVERITIES: Severity[] = ["critical", "high", "medium", "low", "informational"];
 
 export async function classifyChange(
   diffText: string,

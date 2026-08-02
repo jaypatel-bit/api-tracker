@@ -18,6 +18,7 @@ import {
 } from "@dnd-kit/sortable";
 import { KanbanColumn } from "./kanban-column";
 import { ChangeCard, type CardWithDetails } from "./change-card";
+import type { Card } from "@/lib/db/schema";
 
 interface Column {
   id: string;
@@ -52,6 +53,7 @@ export function KanbanBoard({ columns: initial }: { columns: Column[] }) {
 
     const cardId = active.id as string;
     const targetColId = over.id as string;
+    const nextStatus = targetColId as Card["status"];
 
     // Find source column
     let sourceColId = "";
@@ -78,10 +80,10 @@ export function KanbanBoard({ columns: initial }: { columns: Column[] }) {
             return {
               ...col,
               cards: [
-                ...col.cards,
+              ...col.cards,
                 {
                   ...movedCard,
-                  card: { ...movedCard.card, status: targetColId as any },
+                  card: { ...movedCard.card, status: nextStatus },
                 },
               ],
             };

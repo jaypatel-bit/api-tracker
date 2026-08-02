@@ -1,8 +1,9 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Radar, Check } from "lucide-react";
+import { Check, ChevronRight, Radar } from "lucide-react";
 
 interface Provider {
   id: string;
@@ -21,7 +22,7 @@ export default function OnboardingPage() {
 
   useEffect(() => {
     fetch("/api/providers")
-      .then((r) => r.json())
+      .then((response) => response.json())
       .then((data) => {
         setProviders(data);
         setLoading(false);
@@ -39,14 +40,14 @@ export default function OnboardingPage() {
   }
 
   async function handleSubmit() {
-    const promises = Array.from(selected).map((providerId) =>
+    const requests = Array.from(selected).map((providerId) =>
       fetch("/api/subscriptions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ providerId }),
       })
     );
-    await Promise.all(promises);
+    await Promise.all(requests);
 
     startTransition(() => {
       router.push("/board");
@@ -57,78 +58,123 @@ export default function OnboardingPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-24">
-        <div className="h-6 w-6 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
+        <div className="h-7 w-7 animate-spin rounded-full border-2 border-[var(--accent)] border-t-transparent" />
       </div>
     );
   }
 
   return (
-    <div className="mx-auto max-w-2xl py-8">
-      <div className="text-center mb-8">
-        <Radar className="h-10 w-10 text-blue-600 mx-auto mb-3" />
-        <h1 className="text-2xl font-bold text-gray-900">
-          Choose APIs to monitor
-        </h1>
-        <p className="text-sm text-gray-500 mt-2">
-          Select the API providers you depend on. You&apos;ll get notified when
-          they publish breaking changes, deprecations, or updates.
-        </p>
-      </div>
+    <div className="mx-auto max-w-5xl py-4">
+      <div className="panel overflow-hidden rounded-[32px]">
+        <div className="grid gap-0 lg:grid-cols-[0.9fr_1.1fr]">
+          <div className="bg-[linear-gradient(180deg,#10231c,#17382f)] p-8 text-white sm:p-10">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10">
+              <Radar className="h-5 w-5 text-[#97f2d6]" />
+            </div>
+            <p className="mt-6 text-sm font-semibold uppercase tracking-[0.18em] text-[#97f2d6]">
+              Workspace setup
+            </p>
+            <h1 className="mt-3 text-3xl font-semibold tracking-[-0.03em]">
+              Choose the APIs you want APIRadar to watch first
+            </h1>
+            <p className="mt-4 text-sm leading-7 text-white/68">
+              Start with the providers that are closest to campaign delivery, attribution, and executive reporting. You can expand coverage later.
+            </p>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
-        {providers.map((p) => {
-          const isSelected = selected.has(p.id);
-          return (
-            <button
-              key={p.id}
-              onClick={() => toggle(p.id)}
-              className={`flex items-center gap-3 rounded-xl border p-4 text-left transition-all ${
-                isSelected
-                  ? "border-blue-500 bg-blue-50 ring-1 ring-blue-500"
-                  : "border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm"
-              }`}
-            >
-              {p.logoUrl ? (
-                <img
-                  src={p.logoUrl}
-                  alt={p.name}
-                  className="h-10 w-10 rounded-lg border border-gray-100"
-                />
-              ) : (
-                <div className="h-10 w-10 rounded-lg bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-400">
-                  {p.name[0]}
+            <div className="mt-10 space-y-4">
+              {[
+                "Get provider-specific change feeds",
+                "Build a board from actual subscribed platforms",
+                "Route critical updates into action faster",
+              ].map((item) => (
+                <div key={item} className="flex items-center gap-3 text-sm text-white/78">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10">
+                    <Check className="h-4 w-4 text-[#97f2d6]" />
+                  </div>
+                  {item}
                 </div>
-              )}
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-gray-900">{p.name}</p>
-                <p className="text-xs text-gray-500 line-clamp-1">
-                  {p.description}
+              ))}
+            </div>
+          </div>
+
+          <div className="p-8 sm:p-10">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--accent)]">
+                  Select providers
+                </p>
+                <p className="mt-2 text-sm text-[var(--muted)]">
+                  Recommended: choose the platforms used by your reporting and activation workflows.
                 </p>
               </div>
-              {isSelected && (
-                <Check className="h-5 w-5 text-blue-600 shrink-0" />
-              )}
-            </button>
-          );
-        })}
-      </div>
+              <div className="rounded-full bg-[var(--accent-soft)] px-4 py-2 text-sm font-semibold text-[var(--accent-strong)]">
+                {selected.size} selected
+              </div>
+            </div>
 
-      <div className="flex items-center justify-between">
-        <button
-          onClick={() => router.push("/board")}
-          className="text-sm text-gray-500 hover:text-gray-700"
-        >
-          Skip for now
-        </button>
-        <button
-          onClick={handleSubmit}
-          disabled={selected.size === 0 || isPending}
-          className="rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50 transition-colors"
-        >
-          {isPending
-            ? "Setting up..."
-            : `Start monitoring ${selected.size > 0 ? `(${selected.size})` : ""}`}
-        </button>
+            <div className="mt-8 grid gap-3">
+              {providers.map((provider) => {
+                const isSelected = selected.has(provider.id);
+                return (
+                  <button
+                    key={provider.id}
+                    onClick={() => toggle(provider.id)}
+                    className={`flex items-center gap-4 rounded-[24px] border p-4 text-left ${
+                      isSelected
+                        ? "border-[var(--accent)]/25 bg-[var(--accent-soft)]"
+                        : "border-black/6 bg-white hover:border-black/12"
+                    }`}
+                  >
+                    {provider.logoUrl ? (
+                      <Image
+                        src={provider.logoUrl}
+                        alt={provider.name}
+                        width={48}
+                        height={48}
+                        unoptimized
+                        className="h-12 w-12 rounded-2xl border border-black/5 bg-white object-contain p-2"
+                      />
+                    ) : (
+                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--accent-soft)] text-sm font-semibold text-[var(--accent)]">
+                        {provider.name.slice(0, 1)}
+                      </div>
+                    )}
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-semibold text-[var(--foreground)]">
+                        {provider.name}
+                      </p>
+                      <p className="mt-1 text-sm text-[var(--muted)] line-clamp-2">
+                        {provider.description}
+                      </p>
+                    </div>
+                    {isSelected ? (
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--foreground)] text-white">
+                        <Check className="h-4 w-4" />
+                      </div>
+                    ) : null}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <button
+                onClick={() => router.push("/board")}
+                className="text-sm font-medium text-[var(--muted)] hover:text-[var(--foreground)]"
+              >
+                Skip and explore the board
+              </button>
+              <button
+                onClick={handleSubmit}
+                disabled={selected.size === 0 || isPending}
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--foreground)] px-6 py-3 text-sm font-semibold text-white disabled:opacity-50"
+              >
+                {isPending ? "Setting up..." : "Start monitoring"}
+                <ChevronRight className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

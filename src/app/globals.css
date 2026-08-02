@@ -1,8 +1,18 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f4f6f2;
+  --foreground: #10231c;
+  --surface: #fbfcf8;
+  --surface-strong: #ffffff;
+  --muted: #66756f;
+  --border: rgba(16, 35, 28, 0.09);
+  --accent: #0f7a5f;
+  --accent-strong: #0a5d49;
+  --accent-soft: rgba(15, 122, 95, 0.12);
+  --hero: #0b1f19;
+  --hero-2: #14372e;
+  --glow: rgba(103, 224, 188, 0.18);
 }
 
 @theme inline {
@@ -12,15 +22,67 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background:
+    radial-gradient(circle at top, rgba(103, 224, 188, 0.16), transparent 28%),
+    linear-gradient(180deg, #f6f8f4 0%, #f1f4ef 100%);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), sans-serif;
+}
+
+a,
+button {
+  transition:
+    color 160ms ease,
+    background-color 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+::selection {
+  background: rgba(15, 122, 95, 0.18);
+}
+
+.app-shell {
+  background:
+    radial-gradient(circle at top right, rgba(103, 224, 188, 0.12), transparent 20%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.9));
+}
+
+.panel {
+  background: rgba(255, 255, 255, 0.84);
+  border: 1px solid var(--border);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.6) inset,
+    0 18px 50px rgba(13, 36, 28, 0.06);
+  backdrop-filter: blur(16px);
+}
+
+.hero-grid {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+  background-size: 44px 44px;
+}
+
+.stat-card {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(248, 252, 249, 0.9));
+  border: 1px solid rgba(16, 35, 28, 0.08);
+  box-shadow: 0 18px 50px rgba(13, 36, 28, 0.06);
+}
+
+.accent-ring {
+  box-shadow:
+    0 0 0 1px rgba(15, 122, 95, 0.12),
+    0 18px 38px rgba(15, 122, 95, 0.12);
 }
