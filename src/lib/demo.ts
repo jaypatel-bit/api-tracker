@@ -7,8 +7,18 @@ function isMissingOrPlaceholder(value: string | undefined, placeholders: string[
   return placeholders.some((placeholder) => normalized === placeholder.toLowerCase());
 }
 
+export function isPublicDemoMode() {
+  const value = process.env.NEXT_PUBLIC_DEMO_MODE?.trim().toLowerCase();
+  return value === "true";
+}
+
 export function isDemoMode() {
+  if (typeof window !== "undefined") {
+    return isPublicDemoMode();
+  }
+
   return (
+    isPublicDemoMode() ||
     isMissingOrPlaceholder(process.env.DATABASE_URL, [
       "your_neon_or_postgres_connection_string",
     ]) ||
