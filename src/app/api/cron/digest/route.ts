@@ -20,10 +20,17 @@ export async function GET(request: NextRequest) {
   }
 
   try {
+    const now = new Date();
     const currentHourUtc = new Date().getUTCHours();
-    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    const isMonthlyDigestWindow = now.getUTCDate() === 1;
+    const oneMonthAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
 
-    // Get users with digest enabled whose preferred hour matches now
+    if (!isMonthlyDigestWindow) {
+      return NextResponse.json({
+        message: "Monthly digest only sends on the first day of the month",
+      });
+    }
+
     const prefs = await db
       .select()
       .from(notificationPreferences)
@@ -37,11 +44,10 @@ export async function GET(request: NextRequest) {
     const userIds = prefs.map((p) => p.userId);
     if (userIds.length === 0) {
       return NextResponse.json({
-        message: "No users with digest enabled for this hour",
+        message: "No users with monthly digest enabled for this hour",
       });
     }
 
-    // Get recent critical/high cards for these users
     const recentCards = await db
       .select({
         card: cards,
@@ -57,13 +63,11 @@ export async function GET(request: NextRequest) {
       .where(
         and(
           inArray(cards.userId, userIds),
-          eq(cards.status, "new"),
-          gte(cards.createdAt, oneDayAgo),
-          inArray(changeEvents.severity, ["critical", "high"])
+          inArray(cards.status, ["new", "needs_action", "in_progress", "reviewed"]),
+          gte(cards.createdAt, oneMonthAgo)
         )
       );
 
-    // Group by user email
     const byUser = new Map<
       string,
       { name: string; cards: typeof recentCards }
