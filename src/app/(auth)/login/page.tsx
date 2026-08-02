@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Radar } from "lucide-react";
 import { signIn } from "@/lib/auth/client";
+import { getAuthErrorMessage } from "@/lib/auth/error-message";
 import { isPublicDemoMode } from "@/lib/demo";
 
 export default function LoginPage() {
@@ -28,12 +29,12 @@ export default function LoginPage() {
     try {
       const result = await signIn.email({ email, password });
       if (result.error) {
-        setError(result.error.message || "Invalid credentials");
+        setError(getAuthErrorMessage(result.error, "login"));
       } else {
         router.push("/board");
       }
-    } catch {
-      setError("Something went wrong. Please try again.");
+    } catch (error) {
+      setError(getAuthErrorMessage(error, "login"));
     } finally {
       setLoading(false);
     }
@@ -45,7 +46,11 @@ export default function LoginPage() {
       return;
     }
 
-    await signIn.social({ provider: "google", callbackURL: "/board" });
+    try {
+      await signIn.social({ provider: "google", callbackURL: "/board" });
+    } catch (error) {
+      setError(getAuthErrorMessage(error, "social"));
+    }
   }
 
   return (
