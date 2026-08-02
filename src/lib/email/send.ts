@@ -1,5 +1,9 @@
 import { Resend } from "resend";
-import { buildDigestHtml, type DigestItem } from "./templates";
+import {
+  buildCriticalAlertHtml,
+  buildDigestHtml,
+  type DigestItem,
+} from "./templates";
 
 let resendClient: Resend | null = null;
 
@@ -25,7 +29,22 @@ export async function sendDigestEmail(
   await getResend().emails.send({
     from,
     to,
-    subject: `APIRadar Digest: ${changes.length} new change${changes.length !== 1 ? "s" : ""}`,
+    subject: `APIRadar Monthly Digest: ${changes.length} change${changes.length !== 1 ? "s" : ""}`,
     html: buildDigestHtml(name, changes),
+  });
+}
+
+export async function sendCriticalAlertEmail(
+  to: string,
+  name: string,
+  change: DigestItem
+) {
+  const from = process.env.EMAIL_FROM || "APIRadar <notifications@apiradar.dev>";
+
+  await getResend().emails.send({
+    from,
+    to,
+    subject: `APIRadar Critical Alert: ${change.providerName}`,
+    html: buildCriticalAlertHtml(name, change),
   });
 }
