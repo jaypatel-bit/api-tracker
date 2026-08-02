@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import {
   ArrowRight,
   BellRing,
@@ -7,6 +8,7 @@ import {
   ShieldCheck,
   Sparkles,
 } from "lucide-react";
+import { getServerSession } from "@/lib/auth/session";
 
 const FOCUSED_APIS = [
   {
@@ -47,7 +49,13 @@ const TIMELINE = [
   "Route the change into triage, ownership, and resolution tracking",
 ];
 
-export default function HomePage() {
+export default async function HomePage() {
+  const session = await getServerSession();
+
+  if (session) {
+    redirect("/board");
+  }
+
   return (
     <div className="min-h-screen overflow-hidden bg-[var(--background)]">
       <section className="relative isolate overflow-hidden bg-[linear-gradient(180deg,var(--hero),var(--hero-2))] text-white">
