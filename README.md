@@ -2,6 +2,11 @@
 
 APIRadar is a Next.js SaaS app for tracking API changes across marketing and analytics platforms such as Google Analytics, Google Ads, and Meta. It helps teams detect changelog updates, classify severity, and move high-risk changes through a shared review workflow.
 
+## Live App
+
+- Public URL: https://apiradar-e858.onrender.com
+- Public demo: visit `/signup` or `/login` and continue into the sample workspace without setting up a database
+
 ## Product Focus
 
 - Monitor provider changelogs, docs, and release surfaces
