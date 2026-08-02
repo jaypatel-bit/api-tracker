@@ -6,6 +6,7 @@ import { providers, subscriptions } from "@/lib/db/schema";
 import { ProviderLogo } from "@/components/providers/provider-logo";
 import { SubscribeButton } from "@/components/providers/subscribe-button";
 import { getServerSession } from "@/lib/auth/session";
+import { demoProviders, isDemoMode } from "@/lib/demo";
 
 async function getProviders() {
   try {
@@ -29,8 +30,10 @@ async function getUserSubscriptions(userId: string) {
 
 export default async function ProvidersPage() {
   const session = await getServerSession();
-  const allProviders = await getProviders();
-  const subscribedIds = await getUserSubscriptions(session!.user.id);
+  const allProviders = isDemoMode() ? demoProviders : await getProviders();
+  const subscribedIds = isDemoMode()
+    ? new Set(demoProviders.map((provider) => provider.id))
+    : await getUserSubscriptions(session!.user.id);
   const activeProviders = allProviders.filter((provider) => provider.isActive).length;
   const fastestInterval = allProviders.length
     ? Math.min(...allProviders.map((provider) => provider.fetchIntervalHours))

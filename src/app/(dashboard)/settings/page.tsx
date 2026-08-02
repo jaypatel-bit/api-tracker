@@ -3,6 +3,7 @@ import { notificationPreferences } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { getServerSession } from "@/lib/auth/session";
 import { SettingsForm } from "@/components/settings/settings-form";
+import { demoNotificationPrefs, isDemoMode } from "@/lib/demo";
 
 async function getPrefs(userId: string) {
   const results = await db
@@ -22,7 +23,9 @@ async function getPrefs(userId: string) {
 
 export default async function SettingsPage() {
   const session = await getServerSession();
-  const prefs = await getPrefs(session!.user.id);
+  const prefs = isDemoMode()
+    ? demoNotificationPrefs
+    : await getPrefs(session!.user.id);
 
   return (
     <div className="space-y-6">

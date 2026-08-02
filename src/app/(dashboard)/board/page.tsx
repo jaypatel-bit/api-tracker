@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { cn } from "@/lib/utils";
 import { AlertTriangle, BellRing, CircleCheckBig, Layers3 } from "lucide-react";
 import { eq } from "drizzle-orm";
+import { demoCardDetails, isDemoMode } from "@/lib/demo";
 
 const COLUMNS = [
   { id: "new", label: "New" },
@@ -36,7 +37,7 @@ async function getCards(userId: string) {
 
 export default async function BoardPage() {
   const session = await getServerSession();
-  const allCards = await getCards(session!.user.id);
+  const allCards = isDemoMode() ? demoCardDetails : await getCards(session!.user.id);
 
   const grouped = COLUMNS.map((col) => ({
     ...col,

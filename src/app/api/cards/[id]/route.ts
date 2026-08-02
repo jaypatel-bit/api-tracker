@@ -4,11 +4,16 @@ import { cards } from "@/lib/db/schema";
 import { eq, and } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+import { isDemoMode } from "@/lib/demo";
 
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  if (isDemoMode()) {
+    return NextResponse.json({ success: true, demo: true });
+  }
+
   try {
     const session = await auth.api.getSession({
       headers: await headers(),

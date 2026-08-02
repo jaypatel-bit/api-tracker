@@ -5,9 +5,11 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Radar } from "lucide-react";
 import { signIn } from "@/lib/auth/client";
+import { isDemoMode } from "@/lib/demo";
 
 export default function LoginPage() {
   const router = useRouter();
+  const demoMode = isDemoMode();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -15,6 +17,11 @@ export default function LoginPage() {
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
+    if (demoMode) {
+      router.push("/board");
+      return;
+    }
+
     setError("");
     setLoading(true);
 
@@ -33,6 +40,11 @@ export default function LoginPage() {
   }
 
   async function handleGoogleSignIn() {
+    if (demoMode) {
+      router.push("/board");
+      return;
+    }
+
     await signIn.social({ provider: "google", callbackURL: "/board" });
   }
 
@@ -95,6 +107,12 @@ export default function LoginPage() {
                 Access your monitoring board, provider subscriptions, and notification settings.
               </p>
 
+              {demoMode ? (
+                <div className="mt-6 rounded-[22px] border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+                  Demo mode is on. You can use the buttons below to enter the sample workspace without creating an account.
+                </div>
+              ) : null}
+
               {error ? (
                 <div className="mt-6 rounded-[22px] border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
                   {error}
@@ -108,7 +126,7 @@ export default function LoginPage() {
                   </label>
                   <input
                     type="email"
-                    required
+                    required={!demoMode}
                     value={email}
                     onChange={(event) => setEmail(event.target.value)}
                     className="w-full rounded-[20px] border border-black/8 bg-white px-4 py-3 text-sm outline-none focus:border-[var(--accent)]"
@@ -122,7 +140,7 @@ export default function LoginPage() {
                   </label>
                   <input
                     type="password"
-                    required
+                    required={!demoMode}
                     value={password}
                     onChange={(event) => setPassword(event.target.value)}
                     className="w-full rounded-[20px] border border-black/8 bg-white px-4 py-3 text-sm outline-none focus:border-[var(--accent)]"

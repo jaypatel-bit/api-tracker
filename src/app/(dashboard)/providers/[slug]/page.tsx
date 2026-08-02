@@ -8,6 +8,7 @@ import { getServerSession } from "@/lib/auth/session";
 import { db } from "@/lib/db";
 import { changeEvents, providers, subscriptions } from "@/lib/db/schema";
 import { CHANGE_TYPE_LABELS, SEVERITY_COLORS, cn, timeAgo } from "@/lib/utils";
+import { demoChangeEvents, demoProviders, isDemoMode } from "@/lib/demo";
 
 async function getProvider(slug: string) {
   try {
@@ -41,22 +42,29 @@ export default async function ProviderDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const provider = await getProvider(slug);
+  const provider = isDemoMode()
+    ? demoProviders.find((item) => item.slug === slug) || null
+    : await getProvider(slug);
   if (!provider) return notFound();
 
   const session = await getServerSession();
-  const changes = await getChanges(provider.id);
-  const userSub = await db
-    .select()
-    .from(subscriptions)
-    .where(
-      and(
-        eq(subscriptions.userId, session!.user.id),
-        eq(subscriptions.providerId, provider.id)
-      )
-    )
-    .limit(1);
-  const isSubscribed = userSub.length > 0;
+  const changes = isDemoMode()
+    ? demoChangeEvents.filter((item) => item.providerId === provider.id)
+    : await getChanges(provider.id);
+  const isSubscribed = isDemoMode()
+    ? true
+    : (
+        await db
+          .select()
+          .from(subscriptions)
+          .where(
+            and(
+              eq(subscriptions.userId, session!.user.id),
+              eq(subscriptions.providerId, provider.id)
+            )
+          )
+          .limit(1)
+      ).length > 0;
   const criticalCount = changes.filter((change) => change.severity === "critical").length;
   const highRiskCount = changes.filter((change) =>
     ["critical", "high"].includes(change.severity)

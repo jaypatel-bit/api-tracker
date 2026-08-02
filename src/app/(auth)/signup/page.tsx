@@ -5,9 +5,11 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Radar } from "lucide-react";
 import { signUp } from "@/lib/auth/client";
+import { isDemoMode } from "@/lib/demo";
 
 export default function SignupPage() {
   const router = useRouter();
+  const demoMode = isDemoMode();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -16,6 +18,11 @@ export default function SignupPage() {
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
+    if (demoMode) {
+      router.push("/onboarding");
+      return;
+    }
+
     setError("");
     setLoading(true);
 
@@ -85,6 +92,12 @@ export default function SignupPage() {
                 Set up your team workspace and begin with Google Analytics, Google Ads, Meta, or any providers you seed into the platform.
               </p>
 
+              {demoMode ? (
+                <div className="mt-6 rounded-[22px] border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+                  Demo mode is on. Click Create workspace to open the sample onboarding flow without real signup.
+                </div>
+              ) : null}
+
               {error ? (
                 <div className="mt-6 rounded-[22px] border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
                   {error}
@@ -98,7 +111,7 @@ export default function SignupPage() {
                   </label>
                   <input
                     type="text"
-                    required
+                    required={!demoMode}
                     value={name}
                     onChange={(event) => setName(event.target.value)}
                     className="w-full rounded-[20px] border border-black/8 bg-white px-4 py-3 text-sm outline-none focus:border-[var(--accent)]"
@@ -112,7 +125,7 @@ export default function SignupPage() {
                   </label>
                   <input
                     type="email"
-                    required
+                    required={!demoMode}
                     value={email}
                     onChange={(event) => setEmail(event.target.value)}
                     className="w-full rounded-[20px] border border-black/8 bg-white px-4 py-3 text-sm outline-none focus:border-[var(--accent)]"
@@ -126,7 +139,7 @@ export default function SignupPage() {
                   </label>
                   <input
                     type="password"
-                    required
+                    required={!demoMode}
                     minLength={8}
                     value={password}
                     onChange={(event) => setPassword(event.target.value)}
