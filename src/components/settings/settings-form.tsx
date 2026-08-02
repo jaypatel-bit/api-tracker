@@ -40,15 +40,15 @@ export function SettingsForm({ initialPrefs }: SettingsFormProps) {
 
   return (
     <div className="max-w-xl space-y-6">
-      <div className="rounded-xl border border-gray-200 bg-white p-5">
-        <h2 className="text-sm font-semibold text-gray-900 mb-4">
+      <div className="panel rounded-[30px] p-6">
+        <h2 className="mb-5 text-sm font-semibold uppercase tracking-[0.16em] text-[var(--accent)]">
           Notifications
         </h2>
         <div className="space-y-4">
           <label className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-700">Daily email digest</p>
-              <p className="text-xs text-gray-400">
+              <p className="text-sm font-medium text-[var(--foreground)]">Daily email digest</p>
+              <p className="text-xs text-[var(--muted)]">
                 Summary of new changes delivered to your inbox
               </p>
             </div>
@@ -58,13 +58,13 @@ export function SettingsForm({ initialPrefs }: SettingsFormProps) {
               onChange={(e) =>
                 setPrefs({ ...prefs, emailDigestEnabled: e.target.checked })
               }
-              className="h-4 w-4 rounded border-gray-300 text-blue-600"
+              className="h-4 w-4 rounded border-gray-300 text-[var(--accent)]"
             />
           </label>
 
           {prefs.emailDigestEnabled && (
             <div className="pl-0">
-              <label className="block text-xs font-medium text-gray-500 mb-1">
+              <label className="mb-2 block text-xs font-medium text-[var(--muted)]">
                 Digest delivery time
               </label>
               <select
@@ -72,7 +72,7 @@ export function SettingsForm({ initialPrefs }: SettingsFormProps) {
                 onChange={(e) =>
                   setPrefs({ ...prefs, digestHourUtc: Number(e.target.value) })
                 }
-                className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="rounded-full border border-black/8 bg-white px-4 py-2 text-sm text-[var(--foreground)] outline-none focus:border-[var(--accent)]"
               >
                 {HOURS.map((h) => (
                   <option key={h.value} value={h.value}>
@@ -85,8 +85,8 @@ export function SettingsForm({ initialPrefs }: SettingsFormProps) {
 
           <label className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-700">Critical change alerts</p>
-              <p className="text-xs text-gray-400">
+              <p className="text-sm font-medium text-[var(--foreground)]">Critical change alerts</p>
+              <p className="text-xs text-[var(--muted)]">
                 Instant email for critical severity changes
               </p>
             </div>
@@ -96,7 +96,7 @@ export function SettingsForm({ initialPrefs }: SettingsFormProps) {
               onChange={(e) =>
                 setPrefs({ ...prefs, criticalInstantEmail: e.target.checked })
               }
-              className="h-4 w-4 rounded border-gray-300 text-blue-600"
+              className="h-4 w-4 rounded border-gray-300 text-[var(--accent)]"
             />
           </label>
         </div>
@@ -105,7 +105,7 @@ export function SettingsForm({ initialPrefs }: SettingsFormProps) {
       <button
         onClick={handleSave}
         disabled={saving}
-        className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50 transition-colors"
+        className="inline-flex items-center gap-2 rounded-full bg-[var(--foreground)] px-5 py-3 text-sm font-semibold text-white disabled:opacity-50"
       >
         {saved ? (
           <>

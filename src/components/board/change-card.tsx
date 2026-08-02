@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { cn, SEVERITY_COLORS, CHANGE_TYPE_LABELS, timeAgo } from "@/lib/utils";
@@ -34,29 +35,31 @@ export function ChangeCard({ data, isOverlay }: ChangeCardProps) {
       {...attributes}
       {...listeners}
       className={cn(
-        "rounded-lg bg-white border border-gray-200 p-3 cursor-grab active:cursor-grabbing shadow-sm hover:shadow-md transition-shadow",
+        "cursor-grab rounded-[24px] border border-black/6 bg-white/90 p-4 shadow-[0_14px_30px_rgba(16,35,28,0.08)] active:cursor-grabbing",
         isDragging && "opacity-50",
-        isOverlay && "shadow-lg ring-2 ring-blue-400"
+        isOverlay && "ring-2 ring-[var(--accent)]/30"
       )}
     >
-      {/* Header: provider + severity */}
-      <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center gap-1.5">
+      <div className="mb-3 flex items-center justify-between">
+        <div className="flex items-center gap-2">
           {provider.logoUrl && (
-            <img
+            <Image
               src={provider.logoUrl}
               alt={provider.name}
-              className="h-4 w-4 rounded-sm"
+              width={20}
+              height={20}
+              unoptimized
+              className="h-5 w-5 rounded-full"
               onError={(e) => {
                 (e.target as HTMLImageElement).style.display = "none";
               }}
             />
           )}
-          <span className="text-xs font-medium text-gray-500">{provider.name}</span>
+          <span className="text-xs font-medium text-[var(--muted)]">{provider.name}</span>
         </div>
         <span
           className={cn(
-            "rounded-full border px-2 py-0.5 text-[10px] font-semibold capitalize",
+            "rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em]",
             SEVERITY_COLORS[event.severity]
           )}
         >
@@ -64,22 +67,19 @@ export function ChangeCard({ data, isOverlay }: ChangeCardProps) {
         </span>
       </div>
 
-      {/* Title */}
-      <h4 className="text-sm font-semibold text-gray-900 leading-tight mb-1 line-clamp-2">
+      <h4 className="mb-2 line-clamp-2 text-sm font-semibold leading-6 text-[var(--foreground)]">
         {event.title}
       </h4>
 
-      {/* Summary */}
-      <p className="text-xs text-gray-500 leading-relaxed line-clamp-2 mb-2">
-        {event.summary}
+      <p className="mb-4 line-clamp-3 text-xs leading-6 text-[var(--muted)]">
+        {event.executiveSummary || event.summary}
       </p>
 
-      {/* Footer: change type + time */}
       <div className="flex items-center justify-between">
-        <span className="rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium text-gray-600">
+        <span className="rounded-full bg-black/4 px-2.5 py-1 text-[10px] font-medium text-[var(--muted)]">
           {CHANGE_TYPE_LABELS[event.changeType] || event.changeType}
         </span>
-        <span className="text-[10px] text-gray-400">
+        <span className="text-[10px] text-[var(--muted)]">
           {timeAgo(event.detectedAt)}
         </span>
       </div>

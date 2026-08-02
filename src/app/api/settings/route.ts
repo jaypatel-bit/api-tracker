@@ -5,6 +5,7 @@ import { eq } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { z } from "zod";
+import { demoNotificationPrefs, isDemoMode } from "@/lib/demo";
 
 const updateSchema = z.object({
   emailDigestEnabled: z.boolean(),
@@ -13,6 +14,10 @@ const updateSchema = z.object({
 });
 
 export async function GET() {
+  if (isDemoMode()) {
+    return NextResponse.json(demoNotificationPrefs);
+  }
+
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
@@ -44,6 +49,19 @@ export async function GET() {
 }
 
 export async function PUT(request: NextRequest) {
+  if (isDemoMode()) {
+    const body = await request.json();
+    const parsed = updateSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: "Invalid input", details: parsed.error.flatten() },
+        { status: 400 }
+      );
+    }
+
+    return NextResponse.json({ success: true, demo: true });
+  }
+
   try {
     const session = await auth.api.getSession({
       headers: await headers(),

@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+
 export function ProviderLogo({
   src,
   alt,
@@ -10,10 +12,13 @@ export function ProviderLogo({
   className: string;
 }) {
   return (
-    <img
+    <Image
       src={src}
       alt={alt}
+      width={56}
+      height={56}
       className={className}
+      unoptimized
       onError={(e) => {
         (e.target as HTMLImageElement).style.display = "none";
       }}

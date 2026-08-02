@@ -4,8 +4,13 @@ import { subscriptions } from "@/lib/db/schema";
 import { eq, and } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+import { isDemoMode } from "@/lib/demo";
 
 export async function POST(request: NextRequest) {
+  if (isDemoMode()) {
+    return NextResponse.json({ success: true, demo: true });
+  }
+
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
@@ -41,6 +46,10 @@ export async function POST(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
+  if (isDemoMode()) {
+    return NextResponse.json({ success: true, demo: true });
+  }
+
   try {
     const session = await auth.api.getSession({
       headers: await headers(),

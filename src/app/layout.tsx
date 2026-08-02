@@ -13,9 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "APIRadar - API Change Intelligence",
+  title: "APIRadar - Marketing API Change Intelligence",
   description:
-    "Monitor the APIs you depend on. Get notified about breaking changes, deprecations, and updates.",
+    "Track API changes across Google Analytics, Google Ads, Meta, and the rest of your revenue-critical platform stack.",
 };
 
 export default function RootLayout({

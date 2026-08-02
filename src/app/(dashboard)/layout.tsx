@@ -13,11 +13,13 @@ export default async function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Sidebar />
-      <main className="pl-56">
-        <div className="mx-auto max-w-7xl px-6 py-6">{children}</div>
-      </main>
+    <div className="app-shell min-h-screen">
+      <div className="mx-auto grid max-w-[1500px] gap-6 px-4 py-4 lg:grid-cols-[18rem_minmax(0,1fr)] lg:px-6">
+        <Sidebar />
+        <main className="min-w-0">
+          <div className="space-y-6">{children}</div>
+        </main>
+      </div>
     </div>
   );
 }

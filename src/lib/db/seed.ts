@@ -10,59 +10,59 @@ const db = drizzle(sql);
 
 const PROVIDERS = [
   {
-    name: "Stripe",
-    slug: "stripe",
-    logoUrl: "https://logo.clearbit.com/stripe.com",
-    website: "https://stripe.com",
+    name: "Google Analytics",
+    slug: "google-analytics",
+    logoUrl: "https://logo.clearbit.com/analytics.google.com",
+    website: "https://analytics.google.com",
     description:
-      "Payment processing platform. Frequent API changes, versioned releases, and detailed changelogs.",
-    changelogUrl: "https://stripe.com/docs/changelog",
-    fetchCssSelector: "article, .changelog-entry, main",
+      "GA4 and Analytics Admin APIs. Monitor reporting schema changes, attribution updates, and export behavior shifts that affect dashboards and client reporting.",
+    changelogUrl: "https://developers.google.com/analytics/devguides/reporting/data/v1/changelog",
+    fetchCssSelector: "main, article, .devsite-article-body",
     fetchIntervalHours: 4,
   },
   {
-    name: "OpenAI",
-    slug: "openai",
-    logoUrl: "https://logo.clearbit.com/openai.com",
-    website: "https://openai.com",
+    name: "Google Ads",
+    slug: "google-ads",
+    logoUrl: "https://logo.clearbit.com/ads.google.com",
+    website: "https://developers.google.com/google-ads",
     description:
-      "AI model APIs. Fast-moving with frequent model deprecations, rate limit changes, and new capabilities.",
-    changelogUrl: "https://platform.openai.com/docs/changelog",
+      "Google Ads API versions, deprecations, and policy-sensitive changes. Built for campaign automation, reporting pipelines, and bid-management tooling.",
+    changelogUrl: "https://developers.google.com/google-ads/api/docs/release-notes",
+    fetchCssSelector: "main, article, .devsite-article-body",
+    fetchIntervalHours: 4,
+  },
+  {
+    name: "Meta Marketing API",
+    slug: "meta-marketing-api",
+    logoUrl: "https://logo.clearbit.com/meta.com",
+    website: "https://developers.facebook.com/docs/marketing-apis",
+    description:
+      "Monitor Meta Ads and marketing endpoints for version launches, permission changes, webhook adjustments, and business verification requirements.",
+    changelogUrl: "https://developers.facebook.com/docs/graph-api/changelog/",
+    fetchCssSelector: "main, article, ._4cel",
+    fetchIntervalHours: 4,
+  },
+  {
+    name: "Looker Studio",
+    slug: "looker-studio",
+    logoUrl: "https://logo.clearbit.com/lookerstudio.google.com",
+    website: "https://developers.google.com/looker-studio",
+    description:
+      "Watch connector and reporting ecosystem changes that can affect downstream marketing dashboards and stakeholder-facing data products.",
+    changelogUrl: "https://developers.google.com/looker-studio/whats-new",
+    fetchCssSelector: "main, article, .devsite-article-body",
+    fetchIntervalHours: 6,
+  },
+  {
+    name: "LinkedIn Marketing Developer Platform",
+    slug: "linkedin-marketing",
+    logoUrl: "https://logo.clearbit.com/linkedin.com",
+    website: "https://learn.microsoft.com/linkedin/marketing/",
+    description:
+      "Cover adjacent paid-media surfaces with versioning, schema, and permissions changes that ripple into campaign management workflows.",
+    changelogUrl: "https://learn.microsoft.com/linkedin/marketing/integrations/recent-changes",
     fetchCssSelector: "main, article",
-    fetchIntervalHours: 4,
-  },
-  {
-    name: "Twilio",
-    slug: "twilio",
-    logoUrl: "https://logo.clearbit.com/twilio.com",
-    website: "https://www.twilio.com",
-    description:
-      "Communication APIs for SMS, voice, and video. Complex API surface with frequent deprecations.",
-    changelogUrl: "https://www.twilio.com/en-us/changelog",
-    fetchCssSelector: "article, .changelog-item, main",
-    fetchIntervalHours: 6,
-  },
-  {
-    name: "Shopify",
-    slug: "shopify",
-    logoUrl: "https://logo.clearbit.com/shopify.com",
-    website: "https://shopify.dev",
-    description:
-      "E-commerce platform APIs. Versioned REST and GraphQL APIs with scheduled sunset dates.",
-    changelogUrl: "https://shopify.dev/changelog",
-    fetchCssSelector: "article, .changelog-entry, main",
-    fetchIntervalHours: 6,
-  },
-  {
-    name: "GitHub",
-    slug: "github",
-    logoUrl: "https://logo.clearbit.com/github.com",
-    website: "https://github.com",
-    description:
-      "Developer platform APIs. REST and GraphQL APIs with well-structured changelogs and OpenAPI specs.",
-    changelogUrl: "https://github.blog/changelog/",
-    fetchCssSelector: "article, .changelog-post, main",
-    fetchIntervalHours: 4,
+    fetchIntervalHours: 8,
   },
 ];
 
@@ -77,7 +77,7 @@ async function seed() {
     console.log(`  ✓ ${provider.name}`);
   }
 
-  console.log("Done! 5 providers seeded.");
+  console.log("Done! 5 marketing API providers seeded.");
 }
 
 seed().catch(console.error);
