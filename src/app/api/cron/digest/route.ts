@@ -9,10 +9,11 @@ import {
 } from "@/lib/db/schema";
 import { eq, and, gte, inArray } from "drizzle-orm";
 import { sendDigestEmail } from "@/lib/email/send";
+import { getCronSecret } from "@/lib/cron";
 
 export async function GET(request: NextRequest) {
   const authHeader = request.headers.get("authorization");
-  const cronSecret = process.env.CRON_SECRET;
+  const cronSecret = getCronSecret();
 
   if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
