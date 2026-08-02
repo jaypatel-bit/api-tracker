@@ -5,11 +5,11 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Radar } from "lucide-react";
 import { signIn } from "@/lib/auth/client";
-import { isDemoMode } from "@/lib/demo";
+import { isPublicDemoMode } from "@/lib/demo";
 
 export default function LoginPage() {
   const router = useRouter();
-  const demoMode = isDemoMode();
+  const demoMode = isPublicDemoMode();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
