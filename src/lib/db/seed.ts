@@ -10,15 +10,26 @@ const db = drizzle(sql);
 
 const PROVIDERS = [
   {
-    name: "Google Analytics",
+    name: "GA4 Data API",
     slug: "google-analytics",
     logoUrl: "https://logo.clearbit.com/analytics.google.com",
     website: "https://analytics.google.com",
     description:
-      "GA4 and Analytics Admin APIs. Monitor reporting schema changes, attribution updates, and export behavior shifts that affect dashboards and client reporting.",
+      "Official Google Analytics 4 Data API changelog monitoring for reporting schema changes, attribution updates, and export behavior shifts.",
     changelogUrl: "https://developers.google.com/analytics/devguides/reporting/data/v1/changelog",
     fetchCssSelector: "main, article, .devsite-article-body",
-    fetchIntervalHours: 4,
+    fetchIntervalHours: 24 * 30,
+  },
+  {
+    name: "GA4 Measurement Protocol",
+    slug: "ga4-measurement-protocol",
+    logoUrl: "https://logo.clearbit.com/analytics.google.com",
+    website: "https://developers.google.com/analytics/devguides/collection/protocol/ga4",
+    description:
+      "Official GA4 Measurement Protocol changelog monitoring for event collection, payload, and validation changes that affect server-side tracking.",
+    changelogUrl: "https://developers.google.com/analytics/devguides/collection/protocol/ga4/changelog",
+    fetchCssSelector: "main, article, .devsite-article-body",
+    fetchIntervalHours: 24 * 30,
   },
   {
     name: "Google Ads",
@@ -26,10 +37,10 @@ const PROVIDERS = [
     logoUrl: "https://logo.clearbit.com/ads.google.com",
     website: "https://developers.google.com/google-ads",
     description:
-      "Google Ads API versions, deprecations, and policy-sensitive changes. Built for campaign automation, reporting pipelines, and bid-management tooling.",
+      "Official Google Ads API release-note monitoring for versions, deprecations, migration notices, and policy-sensitive changes.",
     changelogUrl: "https://developers.google.com/google-ads/api/docs/release-notes",
     fetchCssSelector: "main, article, .devsite-article-body",
-    fetchIntervalHours: 4,
+    fetchIntervalHours: 24 * 30,
   },
   {
     name: "Meta Marketing API",
@@ -37,10 +48,10 @@ const PROVIDERS = [
     logoUrl: "https://logo.clearbit.com/meta.com",
     website: "https://developers.facebook.com/docs/marketing-apis",
     description:
-      "Monitor Meta Ads and marketing endpoints for version launches, permission changes, webhook adjustments, and business verification requirements.",
+      "Official Meta Graph and Marketing API changelog monitoring for version launches, permission changes, and breaking updates.",
     changelogUrl: "https://developers.facebook.com/docs/graph-api/changelog/",
     fetchCssSelector: "main, article, ._4cel",
-    fetchIntervalHours: 4,
+    fetchIntervalHours: 24 * 30,
   },
   {
     name: "Looker Studio",
@@ -73,11 +84,24 @@ async function seed() {
     await db
       .insert(providers)
       .values(provider)
-      .onConflictDoNothing({ target: providers.slug });
+      .onConflictDoUpdate({
+        target: providers.slug,
+        set: {
+          name: provider.name,
+          logoUrl: provider.logoUrl,
+          website: provider.website,
+          description: provider.description,
+          changelogUrl: provider.changelogUrl,
+          fetchCssSelector: provider.fetchCssSelector,
+          fetchIntervalHours: provider.fetchIntervalHours,
+          isActive: true,
+          updatedAt: new Date(),
+        },
+      });
     console.log(`  ✓ ${provider.name}`);
   }
 
-  console.log("Done! 5 marketing API providers seeded.");
+  console.log(`Done! ${PROVIDERS.length} marketing API providers seeded.`);
 }
 
 seed().catch(console.error);
